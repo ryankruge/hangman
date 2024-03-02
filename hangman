@@ -1,0 +1,80 @@
+#!/usr/bin/python3
+import os, sys, random, colorama
+
+wordlist = ['elephant', 'giraffe', 'tiger', 'dinosaur', 'velociraptor', 'spinosaurus']
+discovered = []
+
+chosen = random.choice(wordlist)
+guesses = 3
+found = False
+
+try:
+	def DisplayProgress():
+		os.system('clear')
+		print("Word: ", end="")
+		joined = "".join(discovered)
+		for letter in chosen:
+			if letter in joined or found:
+				print(letter, end=" ")
+			else:
+				print('_', end=" ")
+		print("\nGuesses: {}".format(guesses))
+
+	DisplayProgress()
+
+	def CloseGame(close_type):
+		result_text = ""
+		result_colour = None
+
+		match close_type:
+			case 0:
+				result_text = "Failed"
+				result_colour = colorama.Fore.RED
+			case 1:
+				result_text = "Correct"
+				result_colour = colorama.Fore.GREEN
+
+		print("{}{}{}! The word was {}{}{}!".format(
+			result_colour,
+			result_text,
+			colorama.Style.RESET_ALL,
+			colorama.Fore.BLUE,
+			chosen,
+			colorama.Style.RESET_ALL
+		))
+		sys.exit()
+
+	while not found:
+		guess = input("Guess: ")
+		if guess == chosen:
+			found = True
+			DisplayProgress()
+			CloseGame(1)
+
+		joined = "".join(discovered)
+
+		for letter in guess:
+			if letter in chosen and letter not in joined:
+				discovered.append(letter)
+				continue
+			guesses -= 1
+
+
+		joined = "".join(discovered)
+
+		for letter in chosen:
+			if letter not in joined:
+				correct = False
+				break
+			correct = True
+		if correct:
+			found = True
+			DisplayProgress()
+			CloseGame(1)
+
+		if guesses <= 0:
+			CloseGame(0)
+
+		DisplayProgress()
+except KeyboardInterrupt:
+	print("\nExiting game.")
